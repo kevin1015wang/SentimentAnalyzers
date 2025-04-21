@@ -44,22 +44,23 @@ def create_tables(db_path='data/project.db'):
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         ''')
+        print("Created reddit_users table")
 
-        # Create Meta Threads posts table
+        # Create Instagram posts table
         cur.execute('''
-            CREATE TABLE IF NOT EXISTS threads_posts (
+            CREATE TABLE IF NOT EXISTS instagram_posts (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
-                account_name TEXT NOT NULL,
-                account_id TEXT NOT NULL,
+                post_id TEXT NOT NULL,
+                username TEXT NOT NULL,
+                caption TEXT,
                 post_date TIMESTAMP NOT NULL,
-                text_content TEXT NOT NULL,
-                is_reply BOOLEAN NOT NULL,
                 likes_count INTEGER,
-                trump_sentiment INTEGER,
+                comments_count INTEGER,
+                url TEXT,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         ''')
-        print("Created threads_posts table")
+        print("Created instagram_posts table")
 
         conn.commit()
         print("Changes committed successfully")

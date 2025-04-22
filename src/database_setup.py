@@ -59,6 +59,7 @@ def create_tables(db_path='data/project.db'):
                 likes_count INTEGER,
                 comments_count INTEGER,
                 url TEXT,
+                trump_sentiment INTEGER,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         ''')

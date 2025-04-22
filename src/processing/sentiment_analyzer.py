@@ -1,3 +1,4 @@
+# src/processing/sentiment_analyzer.py
 import sqlite3
 from textblob import TextBlob
 import os

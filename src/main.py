@@ -14,10 +14,10 @@ def main():
     
     try:
         print("\nScraping Instagram posts...")
-        instagram_scraper.scrape_hashtag_posts(hashtag="trump", limit=25)
+        instagram_scraper.scrape_hashtag_posts(hashtag="trump", api_limit=150, db_limit=25)
         
         print("\nScraping Reddit posts...")
-        reddit_scraper.scrape_posts(search_term="Donald Trump", limit=25)
+        reddit_scraper.scrape_posts(search_term="Donald Trump", api_limit=150, db_limit=25)
     finally:
         instagram_scraper.close()
         reddit_scraper.close()

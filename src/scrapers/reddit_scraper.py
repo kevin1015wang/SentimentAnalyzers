@@ -82,8 +82,22 @@ class ApifyRedditScraper:
                 print("No results found after maximum attempts")
                 return
 
+            print(f"Received {len(items)} items from API")
+            new_posts_count = 0
+            skipped_posts = 0
+            error_posts = 0
+
             for item in items:
                 try:
+                    # Check if post already exists using just the account_id
+                    self.cur.execute('''
+                        SELECT id FROM reddit_posts WHERE account_id = ?
+                    ''', (item.get('userId'),))
+                    if self.cur.fetchone():
+                        print(f"Skipping duplicate post from user {item.get('username')} (ID: {item.get('userId')})")
+                        skipped_posts += 1
+                        continue
+
                     # First insert or get the user
                     self.cur.execute('''
                         INSERT OR IGNORE INTO reddit_users 
@@ -105,6 +119,7 @@ class ApifyRedditScraper:
                     user_row = self.cur.fetchone()
                     if not user_row:
                         print(f"Failed to get user ID for {item.get('username')}")
+                        error_posts += 1
                         continue
                     user_id = user_row[0]
 
@@ -125,14 +140,21 @@ class ApifyRedditScraper:
                         item.get('parsedCommunityName'),
                         item.get('upVotes', 0)
                     ))
+                    new_posts_count += 1
+                    print(f"Added new post from {item.get('username')}")
 
                 except Exception as e:
                     print(f"Error processing item: {e}")
                     print(f"Problematic item: {json.dumps(item, indent=2)}")
+                    error_posts += 1
                     continue
 
             self.conn.commit()
-            print(f"Successfully scraped {len(items)} posts and their users")
+            print(f"\nScraping Summary:")
+            print(f"Total items from API: {len(items)}")
+            print(f"New posts added: {new_posts_count}")
+            print(f"Skipped (duplicate) posts: {skipped_posts}")
+            print(f"Error posts: {error_posts}")
 
         except Exception as e:
             print(f"Error during scraping: {e}")

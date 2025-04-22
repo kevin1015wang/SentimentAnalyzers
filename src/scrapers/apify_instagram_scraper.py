@@ -79,10 +79,17 @@ class InstagramScraper:
                 print("No results found after maximum attempts")
                 return
 
-            # Collect unique usernames from posts
-            usernames = set()
+            new_posts_count = 0
             for item in items:
                 try:
+                    # Check if post already exists
+                    self.cur.execute('''
+                        SELECT id FROM instagram_posts WHERE post_id = ?
+                    ''', (item.get('id'),))
+                    if self.cur.fetchone():
+                        print(f"Skipping duplicate post {item.get('id')}")
+                        continue
+
                     # Insert Instagram post data
                     self.cur.execute('''
                         INSERT INTO instagram_posts 
@@ -97,6 +104,7 @@ class InstagramScraper:
                         item.get('commentsCount', 0),
                         item.get('url', '')
                     ))
+                    new_posts_count += 1
 
                 except Exception as e:
                     print(f"Error processing item: {e}")
@@ -104,7 +112,7 @@ class InstagramScraper:
                     continue
 
             self.conn.commit()
-            print(f"Successfully scraped {len(items)} Instagram posts")
+            print(f"Successfully scraped {new_posts_count} new Instagram posts")
 
         except Exception as e:
             print(f"Error during scraping: {e}")

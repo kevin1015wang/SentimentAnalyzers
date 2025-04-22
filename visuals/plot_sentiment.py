@@ -64,9 +64,10 @@ def plot_weekday_platform():
     rows = load_csv(DATA_DIR / "weekday_sentiment.csv")
     platforms = {row[0] for row in rows}
     weekdays = list(range(7))
-    matrix = {plat: [None]*7 for plat in platforms}
+    matrix = {plat: [50]*7 for plat in platforms}  # Initialize with neutral sentiment (50)
     for plat, wd, avg in rows:
-        matrix[plat][int(wd)] = float(avg)
+        if avg:  # Only update if avg is not None or empty
+            matrix[plat][int(wd)] = float(avg)
 
     # Bar positions
     bar_width = 0.4
@@ -93,25 +94,42 @@ def plot_karma_scatter():
     Reddit karma vs sentiment as scatter plot with regression
     """
     rows = load_tsv(DATA_DIR / "karma_vs_sentiment.tsv")
-    karma = np.array([int(k) for k, _ in rows])
-    sent = np.array([int(s) for _, s in rows])
+    
+    # Filter out invalid rows and convert to numpy arrays
+    valid_rows = [(int(k), int(s)) for k, s in rows if k and s and k != '0' and s != '0']
+    if not valid_rows:
+        print("Warning: No valid data points found for karma vs sentiment plot")
+        return
+        
+    karma = np.array([k for k, _ in valid_rows])
+    sent = np.array([s for _, s in valid_rows])
 
-    # 1st degree polyfit
+    # Only attempt regression if we have enough valid points
     if len(karma) >= 2:
-        slope, intercept = np.polyfit(karma, sent, 1)
-        line_x = np.linspace(karma.min(), karma.max(), 100)
-        line_y = slope * line_x + intercept
+        try:
+            slope, intercept = np.polyfit(karma, sent, 1)
+            line_x = np.linspace(karma.min(), karma.max(), 100)
+            line_y = slope * line_x + intercept
+            
+            # Calculate R squared
+            r_value = np.corrcoef(karma, sent)[0, 1]
+            r_squared = r_value ** 2
+        except (np.linalg.LinAlgError, ValueError) as e:
+            print(f"Warning: Could not compute regression line: {e}")
+            line_x = line_y = None
+            r_squared = None
     else:
         line_x = line_y = None
+        r_squared = None
 
     fig, ax = plt.subplots(figsize=(8, 5))
     ax.scatter(karma, sent, alpha=0.6, s=20)
+    
     if line_x is not None:
         ax.plot(line_x, line_y, linestyle="--", linewidth=1.5)
-        # R squared
-        r_value = np.corrcoef(karma, sent)[0, 1]
-        ax.text(0.05, 0.95, f"$R^2$ = {r_value**2:.2f}", transform=ax.transAxes,
-                verticalalignment="top")
+        if r_squared is not None:
+            ax.text(0.05, 0.95, f"$R^2$ = {r_squared:.2f}", transform=ax.transAxes,
+                    verticalalignment="top")
 
     ax.set_xscale("log")
     ax.set_title("Reddit: User Karma vs Trump Sentiment")

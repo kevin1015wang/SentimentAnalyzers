@@ -27,17 +27,6 @@ def load_csv(path: Path) -> List[Tuple[str, ...]]:
         header = next(reader)
         return [tuple(row) for row in reader]
 
-
-def load_tsv(path: Path) -> List[Tuple[str, ...]]:
-    """
-    Load tab seperated values
-    """
-    with path.open(newline="", encoding="utf-8") as fp:
-        reader = csv.reader(fp, delimiter="\t")
-        header = next(reader)
-        return [tuple(row) for row in reader]
-
-
 def plot_monthly_trend():
     """
     Creates monthly average sentiment as a line trend.

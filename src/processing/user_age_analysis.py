@@ -5,12 +5,6 @@ import json
 from datetime import datetime
 
 def analyze_account_age_sentiment():
-    """
-    Analyzes the relationship between user account age and sentiment by:
-    1. Joining reddit_users and reddit_posts tables
-    2. Grouping users by account age ranges in months
-    3. Calculating average sentiment for each age range
-    """
     # Get the absolute path to the database
     db_path = Path(__file__).parent.parent / 'data' / 'project.db'
     
@@ -20,15 +14,15 @@ def analyze_account_age_sentiment():
         
         # Define account age ranges in months
         age_ranges = [
-            (0, 3),      # 0-3 months
-            (3, 6),      # 3-6 months
-            (6, 12),     # 6-12 months
-            (12, 24),    # 1-2 years
-            (24, 36),    # 2-3 years
-            (36, 60),    # 3-5 years
-            (60, 84),    # 5-7 years
-            (84, 120),   # 7-10 years
-            (120, None)  # 10+ years
+            (0, 3),     
+            (3, 6),      
+            (6, 12),   
+            (12, 24),    
+            (24, 36),    
+            (36, 60),
+            (60, 84),   
+            (84, 120),   
+            (120, None)  
         ]
         
         results = []

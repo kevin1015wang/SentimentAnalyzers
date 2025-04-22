@@ -14,7 +14,7 @@ def create_tables(db_path='data/project.db'):
         
         print("Connected to database successfully")
         
-        # Create Reddit users table first (parent table)
+        # Create Reddit users table first
         cur.execute('''
             CREATE TABLE IF NOT EXISTS reddit_users (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,

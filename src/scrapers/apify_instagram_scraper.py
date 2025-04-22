@@ -69,7 +69,7 @@ class InstagramScraper:
             dataset_url = f"https://api.apify.com/v2/actor-runs/{run_id}/dataset/items?token={self.api_key}"
             items = []
             
-            max_attempts = 60  # Increased from 30 to 60
+            max_attempts = 60  
             attempt = 0
             last_count = 0
             no_new_items_count = 0
@@ -90,7 +90,7 @@ class InstagramScraper:
                                 print("No new items found in last 5 attempts, proceeding with current results")
                                 break
                 
-                time.sleep(5)  # Increased from 2 to 5 seconds
+                time.sleep(5)  
                 attempt += 1
                 print(f"Waiting for results... attempt {attempt}/{max_attempts}")
 
@@ -104,7 +104,6 @@ class InstagramScraper:
             error_posts = 0
             processed_posts = 0
 
-            # Shuffle items to get random selection each time
             random.shuffle(items)
 
             # Keep trying until we either add enough posts or run out of posts to check

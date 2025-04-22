@@ -14,29 +14,12 @@ def create_tables(db_path='data/project.db'):
         
         print("Connected to database successfully")
         
-        # Create Reddit posts table
-        cur.execute('''
-            CREATE TABLE IF NOT EXISTS reddit_posts (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                account_name TEXT NOT NULL,
-                account_id TEXT NOT NULL,
-                post_date TIMESTAMP NOT NULL,
-                text_content TEXT NOT NULL,
-                is_reply BOOLEAN NOT NULL,
-                subreddit TEXT,
-                upvotes INTEGER,
-                trump_sentiment INTEGER,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )
-        ''')
-        print("Created reddit_posts table")
-
-        # Create Reddit users table
+        # Create Reddit users table first (parent table)
         cur.execute('''
             CREATE TABLE IF NOT EXISTS reddit_users (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_id TEXT NOT NULL UNIQUE,
                 username TEXT NOT NULL UNIQUE,
-                user_id TEXT NOT NULL,
                 karma INTEGER,
                 account_created TIMESTAMP,
                 is_moderator BOOLEAN,
@@ -45,6 +28,25 @@ def create_tables(db_path='data/project.db'):
             )
         ''')
         print("Created reddit_users table")
+
+        # Create Reddit posts table with foreign key reference
+        cur.execute('''
+            CREATE TABLE IF NOT EXISTS reddit_posts (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_id INTEGER NOT NULL,
+                account_id TEXT NOT NULL,
+                account_name TEXT NOT NULL,
+                post_date TIMESTAMP NOT NULL,
+                text_content TEXT NOT NULL,
+                is_reply BOOLEAN NOT NULL,
+                subreddit TEXT,
+                upvotes INTEGER,
+                trump_sentiment INTEGER,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (user_id) REFERENCES reddit_users(id)
+            )
+        ''')
+        print("Created reddit_posts table")
 
         # Create Instagram posts table
         cur.execute('''

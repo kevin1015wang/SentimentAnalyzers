@@ -69,7 +69,7 @@ class InstagramScraper:
                 response = requests.get(dataset_url)
                 if response.status_code == 200:
                     items = response.json()
-                    if items:  
+                    if items:  # If we have results
                         break
                 time.sleep(2)
                 attempt += 1
@@ -79,8 +79,11 @@ class InstagramScraper:
                 print("No results found after maximum attempts")
                 return
 
+            # Collect unique usernames from posts
+            usernames = set()
             for item in items:
                 try:
+                    # Insert Instagram post data
                     self.cur.execute('''
                         INSERT INTO instagram_posts 
                         (post_id, username, caption, post_date, likes_count, comments_count, url)

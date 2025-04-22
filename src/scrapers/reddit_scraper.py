@@ -84,6 +84,7 @@ class ApifyRedditScraper:
 
             for item in items:
                 try:
+                    # First insert or get the user
                     self.cur.execute('''
                         INSERT OR IGNORE INTO reddit_users 
                         (username, user_id, karma, account_created, is_moderator, is_verified)
@@ -91,21 +92,33 @@ class ApifyRedditScraper:
                     ''', (
                         item.get('username'),
                         item.get('userId'),
-                        0,  
+                        0,  # Default karma
                         self.convert_timestamp(item.get('createdAt')),
-                        False,  
-                        False  
+                        False,  # Default is_moderator
+                        False  # Default is_verified
                     ))
+
+                    # Get the user's integer ID
+                    self.cur.execute('''
+                        SELECT id FROM reddit_users WHERE user_id = ?
+                    ''', (item.get('userId'),))
+                    user_row = self.cur.fetchone()
+                    if not user_row:
+                        print(f"Failed to get user ID for {item.get('username')}")
+                        continue
+                    user_id = user_row[0]
 
                     text_content = f"{item.get('title', '')}\n{item.get('body', '')}"
 
+                    # Insert the post with the integer user_id
                     self.cur.execute('''
                         INSERT INTO reddit_posts 
-                        (account_name, account_id, post_date, text_content, is_reply, subreddit, upvotes)
-                        VALUES (?, ?, ?, ?, ?, ?, ?)
+                        (user_id, account_id, account_name, post_date, text_content, is_reply, subreddit, upvotes)
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
                     ''', (
-                        item.get('username'),
+                        user_id,
                         item.get('userId'),
+                        item.get('username'),
                         self.convert_timestamp(item.get('createdAt')),
                         text_content.strip(),
                         False,

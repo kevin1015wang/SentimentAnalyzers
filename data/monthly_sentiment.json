@@ -9,7 +9,7 @@
   },
   {
     "month": "2025-01",
-    "avg_sentiment": 56.0
+    "avg_sentiment": 56.44
   },
   {
     "month": "2025-02",
@@ -17,6 +17,6 @@
   },
   {
     "month": "2025-04",
-    "avg_sentiment": 53.46
+    "avg_sentiment": 53.26
   }
 ]

@@ -5,9 +5,11 @@ import os
 from dotenv import load_dotenv
 
 class SentimentAnalyzer:
-    def __init__(self, db_path='../data/project.db'):
+    def __init__(self, db_path=None):
+        if db_path is None:
+            db_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'data', 'project.db'))
         self.db_path = db_path
-        self.conn = sqlite3.connect(db_path)
+        self.conn = sqlite3.connect(self.db_path)
         self.cur = self.conn.cursor()
 
     def calculate_sentiment(self, text):

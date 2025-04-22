@@ -89,10 +89,10 @@ def plot_weekday_platform():
     fig.savefig(VIS_DIR / "plot2_weekday_platform.png", dpi=300, bbox_inches="tight")
     plt.close(fig)
 
-def plot_karma_scatter():
-    """
-    Reddit karma vs sentiment as scatter plot with regression
-    """
+"""def plot_karma_scatter():
+    
+    #Reddit karma vs sentiment as scatter plot with regression
+    
     rows = load_tsv(DATA_DIR / "karma_vs_sentiment.tsv")
     
     # Filter out invalid rows and convert to numpy arrays
@@ -138,6 +138,7 @@ def plot_karma_scatter():
     fig.tight_layout()
     fig.savefig(VIS_DIR / "plot3_karma_scatter.png", dpi=300)
     plt.close(fig)
+"""
 
 def plot_subreddit_bar():
     """
@@ -190,7 +191,7 @@ def main():
     print("Generating visualisations in", VIS_DIR.resolve())
     plot_monthly_trend()
     plot_weekday_platform()
-    plot_karma_scatter()
+    #plot_karma_scatter()
     plot_subreddit_bar()
     print("Images saved as plot1_ to plot4_...")
 

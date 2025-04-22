@@ -89,13 +89,47 @@ def plot_weekday_platform():
     fig.savefig(VIS_DIR / "plot2_weekday_platform.png", dpi=300, bbox_inches="tight")
     plt.close(fig)
 
+def plot_account_age_sentiment():
+    """
+    Creates a bar chart showing average sentiment by account age range.
+    """
+    data = json.loads((DATA_DIR / "account_age_sentiment.json").read_text())
+    age_ranges = [d["account_age_range"] for d in data]
+    sentiments = [d["avg_sentiment"] for d in data]
+
+    fig, ax = plt.subplots(figsize=(10, 6))
+    
+    # Create bars
+    bars = ax.bar(age_ranges, sentiments, color='skyblue')
+    
+    # Add value labels on top of each bar
+    for bar in bars:
+        height = bar.get_height()
+        ax.text(bar.get_x() + bar.get_width()/2., height,
+                f'{height:.1f}',
+                ha='center', va='bottom')
+    
+    ax.set_title("Average Sentiment by Account Age Range")
+    ax.set_xlabel("Account Age Range (months)")
+    ax.set_ylabel("Average Sentiment (0-100)")
+    ax.set_ylim(0, 100)  # Set y-axis range to match sentiment scale
+    plt.xticks(rotation=45, ha='right')
+    
+    # Add a horizontal line at 50 to show neutral sentiment
+    ax.axhline(y=50, color='gray', linestyle='--', alpha=0.5)
+    
+    fig.tight_layout()
+    fig.savefig(VIS_DIR / "plot3_account_age_sentiment.png", dpi=300, bbox_inches="tight")
+    plt.close(fig)
+
 # main
 
 def main():
     print("Generating visualisations in", VIS_DIR.resolve())
     plot_monthly_trend()
     plot_weekday_platform()
-    print("Images saved as plot1_ to plot4_...")
+    plot_account_age_sentiment()
+    print("Images saved as plot1_ to plot3_...")
 
 
 if __name__ == "__main__":

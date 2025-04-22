@@ -70,56 +70,6 @@ def calc_weekday_sentiment(cur: sqlite3.Cursor) -> None:
         rows=rows,
     )
 
-
-"""def calc_karma_vs_sentiment(cur: sqlite3.Cursor) -> None:
-    ""/"
-    Reddit user karma vs post sentiment pairs.  
-    Uses a JOIN.
-    ""/"
-    query = ""/"
-        SELECT u.karma,
-               p.trump_sentiment
-        FROM   reddit_posts  AS p
-        JOIN   reddit_users  AS u  ON p.user_id = u.id
-        WHERE  p.trump_sentiment IS NOT NULL
-          AND  u.karma           IS NOT NULL;
-    ""/"
-    cur.execute(query)
-    rows = cur.fetchall()
-    write_csv(
-        OUT_DIR / "karma_vs_sentiment.tsv",
-        header=("karma", "trump_sentiment"),
-        rows=rows,
-        delimiter="\t",
-    )
-"""
-
-def calc_subreddit_sentiment(cur: sqlite3.Cursor, min_posts: int = 5) -> None:
-    """
-    Compute average sentiment per subreddit with a minimum of 5 posts.
-    """
-    query = f"""
-        SELECT subreddit,
-               COUNT(*)                 AS n_posts,
-               ROUND(AVG(trump_sentiment), 2) AS avg_sentiment
-        FROM   reddit_posts
-        WHERE  subreddit IS NOT NULL
-        AND    trump_sentiment IS NOT NULL
-        GROUP  BY subreddit
-        HAVING n_posts >= {min_posts}
-        ORDER  BY avg_sentiment DESC;
-    """
-    cur.execute(query)
-    rows = cur.fetchall()
-
-    # delimited text for readability
-    path = OUT_DIR / "subreddit_sentiment.txt"
-    with path.open("w", encoding="utf-8") as fp:
-        fp.write("subreddit|n_posts|avg_sentiment\n")
-        for subreddit, n, avg in rows:
-            fp.write(f"{subreddit}|{n}|{avg}\n")
-
-
 def calc_monthly_sentiment(cur: sqlite3.Cursor) -> None:
     """
     Overall monthly sentiment trend with both platforms.
@@ -160,8 +110,6 @@ def main() -> None:
 
         print("Making Part‑3 calculation files...")
         calc_weekday_sentiment(cur)
-        #calc_karma_vs_sentiment(cur)
-        calc_subreddit_sentiment(cur)
         calc_monthly_sentiment(cur)
 
     print("All files written to", OUT_DIR.resolve())

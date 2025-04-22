@@ -1,26 +1,53 @@
+from __future__ import annotations
 import os
 from dotenv import load_dotenv
-from src.scrapers.apify_instagram_scraper import InstagramScraper
-from src.scrapers.reddit_scraper import ApifyRedditScraper
+
+# Project
 from src.database_setup import create_tables
+from src.scrapers.apify_instagram_scraper import InstagramScraper
+from src.scrapers.reddit_scraper        import ApifyRedditScraper
 
-load_dotenv()
+from src.processing.sentiment_analyzer  import main as sentiment_main
+from src.processing.process_data        import main as process_data_main
+from visuals.plot_sentiment             import main as plot_sentiment_main
 
-def main():
-    create_tables()
-    
-    instagram_scraper = InstagramScraper()
-    reddit_scraper = ApifyRedditScraper()
-    
+# Scraper helper
+def run_scrapers() -> None:
+    """Scrape 25 fresh posts from each platform."""
+    insta = InstagramScraper()
+    reddit = ApifyRedditScraper()
     try:
-        print("\nScraping Instagram posts...")
-        instagram_scraper.scrape_hashtag_posts(hashtag="trump", api_limit=150, db_limit=25)
-        
-        print("\nScraping Reddit posts...")
-        reddit_scraper.scrape_posts(search_term="Donald Trump", api_limit=150, db_limit=25)
-    finally:
-        instagram_scraper.close()
-        reddit_scraper.close()
+        print("\n Scraping Instagram (#trump)…")
+        insta.scrape_hashtag_posts(hashtag="trump", api_limit=150, db_limit=25)
 
-if __name__ == '__main__':
+        print("\n Scraping Reddit (Donald Trump)…")
+        reddit.scrape_posts(search_term="Donald Trump", api_limit=150, db_limit=25)
+    finally:
+        insta.close()
+        reddit.close()
+
+# Main
+def main() -> None:
+    load_dotenv()
+    create_tables()
+
+    # scrape
+    run_scrapers()
+
+    # sentiment score
+    print("\nSentiment analysis…")
+    sentiment_main()
+
+    # generate calculation files
+    print("\nBuilding calculation files…")
+    process_data_main()
+
+    # create plots
+    print("\nRendering plots…")
+    plot_sentiment_main()
+
+    print("\nDone! Check the data/ and visuals/ folders")
+
+# ───────────────────────────────────────────────────────────────────────────
+if __name__ == "__main__":
     main()

@@ -1,0 +1,14 @@
+[
+  {
+    "account_age_range": "0-3 months",
+    "avg_sentiment": 50.88
+  },
+  {
+    "account_age_range": "3-6 months",
+    "avg_sentiment": 53.2
+  },
+  {
+    "account_age_range": "12-24 months",
+    "avg_sentiment": 49.0
+  }
+]

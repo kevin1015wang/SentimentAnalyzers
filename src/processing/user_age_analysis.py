@@ -6,7 +6,7 @@ from datetime import datetime
 
 def analyze_account_age_sentiment():
     # Get the absolute path to the database
-    db_path = Path(__file__).parent.parent / 'data' / 'project.db'
+    db_path = Path(__file__).parent.parent.parent / 'data' / 'project.db'
     
     try:
         conn = sqlite3.connect(db_path)
@@ -64,7 +64,7 @@ def analyze_account_age_sentiment():
                 })
         
         # Save results to JSON file
-        output_path = Path(__file__).parent.parent / 'data' / 'account_age_sentiment.json'
+        output_path = Path(__file__).parent.parent.parent / 'data' / 'account_age_sentiment.json'
         with open(output_path, 'w') as f:
             json.dump(results, f, indent=2)
         

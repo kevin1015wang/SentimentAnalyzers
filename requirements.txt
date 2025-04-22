@@ -1,0 +1,12 @@
+# data
+pandas>=2.2
+numpy>=1.26
+matplotlib>=3.9
+
+# NLP
+textblob>=0.18.0
+# python -m textblob.download_corpora
+
+# scraping
+requests>=2.32
+python-dotenv>=1.0

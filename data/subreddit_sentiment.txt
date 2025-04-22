@@ -1,2 +1,1 @@
 subreddit|n_posts|avg_sentiment
-None|94|52.57

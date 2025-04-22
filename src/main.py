@@ -1,8 +1,8 @@
 import os
 from dotenv import load_dotenv
-from scrapers.apify_instagram_scraper import InstagramScraper
-from scrapers.reddit_scraper import ApifyRedditScraper
-from database_setup import create_tables
+from src.scrapers.apify_instagram_scraper import InstagramScraper
+from src.scrapers.reddit_scraper import ApifyRedditScraper
+from src.database_setup import create_tables
 
 load_dotenv()
 

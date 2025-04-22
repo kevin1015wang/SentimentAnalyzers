@@ -71,19 +71,19 @@ def calc_weekday_sentiment(cur: sqlite3.Cursor) -> None:
     )
 
 
-def calc_karma_vs_sentiment(cur: sqlite3.Cursor) -> None:
-    """
+"""def calc_karma_vs_sentiment(cur: sqlite3.Cursor) -> None:
+    ""/"
     Reddit user karma vs post sentiment pairs.  
     Uses a JOIN.
-    """
-    query = """
+    ""/"
+    query = ""/"
         SELECT u.karma,
                p.trump_sentiment
         FROM   reddit_posts  AS p
         JOIN   reddit_users  AS u  ON p.user_id = u.id
         WHERE  p.trump_sentiment IS NOT NULL
           AND  u.karma           IS NOT NULL;
-    """
+    ""/"
     cur.execute(query)
     rows = cur.fetchall()
     write_csv(
@@ -92,18 +92,19 @@ def calc_karma_vs_sentiment(cur: sqlite3.Cursor) -> None:
         rows=rows,
         delimiter="\t",
     )
+"""
 
-
-def calc_subreddit_sentiment(cur: sqlite3.Cursor, min_posts: int = 20) -> None:
+def calc_subreddit_sentiment(cur: sqlite3.Cursor, min_posts: int = 5) -> None:
     """
-    Compute average sentiment per subreddit with a minimum of 20 posts.
+    Compute average sentiment per subreddit with a minimum of 5 posts.
     """
     query = f"""
         SELECT subreddit,
                COUNT(*)                 AS n_posts,
                ROUND(AVG(trump_sentiment), 2) AS avg_sentiment
         FROM   reddit_posts
-        WHERE  trump_sentiment IS NOT NULL
+        WHERE  subreddit IS NOT NULL
+        AND    trump_sentiment IS NOT NULL
         GROUP  BY subreddit
         HAVING n_posts >= {min_posts}
         ORDER  BY avg_sentiment DESC;
@@ -159,7 +160,7 @@ def main() -> None:
 
         print("Making Part‑3 calculation files...")
         calc_weekday_sentiment(cur)
-        calc_karma_vs_sentiment(cur)
+        #calc_karma_vs_sentiment(cur)
         calc_subreddit_sentiment(cur)
         calc_monthly_sentiment(cur)
 

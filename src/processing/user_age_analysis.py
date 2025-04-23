@@ -5,14 +5,12 @@ import json
 from datetime import datetime
 
 def analyze_account_age_sentiment():
-    # Get the absolute path to the database
     db_path = Path(__file__).parent.parent.parent / 'data' / 'project.db'
     
     try:
         conn = sqlite3.connect(db_path)
         cur = conn.cursor()
         
-        # Define account age ranges in months
         age_ranges = [
             (0, 3),     
             (3, 6),      
@@ -28,7 +26,6 @@ def analyze_account_age_sentiment():
         results = []
         
         for min_age, max_age in age_ranges:
-            # Build the query with appropriate age range condition
             if max_age is None:
                 age_condition = "(strftime('%m', 'now') + 12 * strftime('%Y', 'now')) - (strftime('%m', account_created) + 12 * strftime('%Y', account_created)) >= ?"
                 params = (min_age,)
@@ -36,7 +33,6 @@ def analyze_account_age_sentiment():
                 age_condition = "(strftime('%m', 'now') + 12 * strftime('%Y', 'now')) - (strftime('%m', account_created) + 12 * strftime('%Y', account_created)) >= ? AND (strftime('%m', 'now') + 12 * strftime('%Y', 'now')) - (strftime('%m', account_created) + 12 * strftime('%Y', account_created)) < ?"
                 params = (min_age, max_age)
             
-            # Join users and posts tables, group by account age range
             query = f"""
                 SELECT 
                     COUNT(DISTINCT ru.id) as user_count,
@@ -51,19 +47,17 @@ def analyze_account_age_sentiment():
             cur.execute(query, params)
             user_count, post_count, avg_sentiment = cur.fetchone()
             
-            # Format the range label
             if max_age is None:
                 range_label = f"{min_age}+ months"
             else:
                 range_label = f"{min_age}-{max_age} months"
             
-            if user_count > 0:  # Only include ranges with data
+            if user_count > 0: 
                 results.append({
                     "account_age_range": range_label,
                     "avg_sentiment": round(avg_sentiment, 2) if avg_sentiment else None
                 })
         
-        # Save results to JSON file
         output_path = Path(__file__).parent.parent.parent / 'data' / 'account_age_sentiment.json'
         with open(output_path, 'w') as f:
             json.dump(results, f, indent=2)

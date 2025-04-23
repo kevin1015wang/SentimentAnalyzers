@@ -18,23 +18,18 @@ class SentimentAnalyzer:
         0 = most negative, 100 = most positive
         """
         if not text:
-            return 50  # Neutral if no text
+            return 50  
         
-        # Get sentiment polarity (-1 to 1)
         sentiment = TextBlob(text).sentiment.polarity
         
-        # Convert to 0-100 scale
-        # -1 to 1 -> 0 to 100
         score = int((sentiment + 1) * 50)
         
-        # Ensure score is within bounds
         return max(0, min(100, score))
 
     def analyze_reddit_posts(self):
         """Analyze sentiment of Reddit posts and update the database"""
         print("\nAnalyzing Reddit posts...")
         
-        # Get all posts that haven't been analyzed yet
         self.cur.execute('''
             SELECT id, text_content 
             FROM reddit_posts 
@@ -48,7 +43,6 @@ class SentimentAnalyzer:
             try:
                 sentiment_score = self.calculate_sentiment(text)
                 
-                # Update the post with sentiment score
                 self.cur.execute('''
                     UPDATE reddit_posts 
                     SET trump_sentiment = ? 
@@ -66,7 +60,6 @@ class SentimentAnalyzer:
         """Analyze sentiment of Instagram posts and update the database"""
         print("\nAnalyzing Instagram posts...")
         
-        # Get all posts that haven't been analyzed yet
         self.cur.execute('''
             SELECT id, caption 
             FROM instagram_posts 
@@ -80,7 +73,6 @@ class SentimentAnalyzer:
             try:
                 sentiment_score = self.calculate_sentiment(caption)
                 
-                # Update the post with sentiment score
                 self.cur.execute('''
                     UPDATE instagram_posts 
                     SET trump_sentiment = ? 
